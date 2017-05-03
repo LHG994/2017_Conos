@@ -54,9 +54,6 @@ public class BoardActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
-
-
-
         //Create tabs end
 
 
@@ -68,8 +65,7 @@ public class BoardActivity extends AppCompatActivity {
                 switch (tabs.getSelectedTabPosition()) {
                     case 0:
                         Toast.makeText(BoardActivity.this, "Colleague Menu Button", Toast.LENGTH_LONG).show();
-                        board_item item = new board_item();
-                        item.setName("Hello");
+                        BoardFragment.board_item item = new BoardFragment.board_item();
 
                         return;
                     case 1:
@@ -89,7 +85,7 @@ public class BoardActivity extends AppCompatActivity {
         if(requestCode == 0)
             if(resultCode == 0){
                 String string;
-                board_item item = new board_item();
+                BoardFragment.board_item item = new BoardFragment.board_item();
                 string = data.getStringExtra("BN");
                 item.setName(string);
                 board_itemList.add(item);
