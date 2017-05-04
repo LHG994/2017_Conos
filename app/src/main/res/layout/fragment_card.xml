@@ -4,16 +4,46 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/card_recycler"
-        android:clickable="true"
-        android:divider="@color/half_black"
-        android:dividerHeight="1dp"
+        android:id="@+id/card_layout"
         >
 
 
-    </android.support.v7.widget.RecyclerView>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/todo_layout"
+                >
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/todo_notyet_recycler">
+
+                </android.support.v7.widget.RecyclerView>
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/todo_doing_recycler"
+                    android:layout_below="@+id/todo_notyet_recycler">
+
+                </android.support.v7.widget.RecyclerView>
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/todo_done_recycler"
+                    android:layout_below="@+id/todo_doing_recycler">
+
+                </android.support.v7.widget.RecyclerView>
+
+                </RelativeLayout>
+
+
+
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>
