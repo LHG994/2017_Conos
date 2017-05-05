@@ -55,6 +55,6 @@
         android:text="Undo"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="#ff000000"
-         />
+        android:visibility="gone" />
 
 </RelativeLayout>

@@ -154,7 +154,7 @@ public class CardFragment extends Fragment {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item_todo, parent, false);
-            view.setOnLongClickListener(new Notyet_item_onclick_listener());
+            view.setOnClickListener(new Notyet_item_onclick_listener());
             return new ViewHolder(view);
         }
 
@@ -205,9 +205,9 @@ public class CardFragment extends Fragment {
             }
         }
 
-        class Notyet_item_onclick_listener implements View.OnLongClickListener {
+        class Notyet_item_onclick_listener implements View.OnClickListener {
             @Override
-            public boolean onLongClick(View view) {
+            public void onClick(View view) {
                 int itemposition = recyclerView_todo_notyet.getChildLayoutPosition(view);
                 Toast.makeText(view.getContext(), "Long clicked", Toast.LENGTH_LONG).show();
 
@@ -215,20 +215,7 @@ public class CardFragment extends Fragment {
 
                 Button d_button = item.getDelete_button();
 
-                return false;
-            }
-        }
-
-
-
-        class Notyet_undo_button_onclick_listener implements View.OnClickListener {
-            @Override
-            public void onClick(final View view) {
-                View parent_view = (View) view.getParent();
-                RecyclerView recyclerView = (RecyclerView) parent_view.getParent();
-                final int position = recyclerView.getChildLayoutPosition(parent_view);
-                Card_Todo_Item_Notyet item = notyet_itemList.get(position);
-                //지우는 버튼
+                d_button.setVisibility(View.VISIBLE);
             }
         }
     }
