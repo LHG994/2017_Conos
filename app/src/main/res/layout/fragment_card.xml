@@ -17,26 +17,56 @@
                 android:id="@+id/todo_layout"
                 >
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/text_notyet"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
+                    android:text="Todos"
+                    android:textColor="@color/pink"/>
+
                 <android.support.v7.widget.RecyclerView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/todo_notyet_recycler">
+                    android:id="@+id/todo_notyet_recycler"
+                    android:layout_below="@+id/text_notyet">
 
                 </android.support.v7.widget.RecyclerView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/text_doing"
+                    android:layout_below="@+id/todo_notyet_recycler"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
+                    android:text="doing"
+                    android:textColor="@color/pink"/>
 
                 <android.support.v7.widget.RecyclerView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/todo_doing_recycler"
-                    android:layout_below="@+id/todo_notyet_recycler">
+                    android:layout_below="@+id/text_doing">
 
                 </android.support.v7.widget.RecyclerView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/text_done"
+                    android:layout_below="@+id/todo_doing_recycler"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
+                    android:text="done"
+                    android:textColor="@color/pink"/>
 
                 <android.support.v7.widget.RecyclerView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/todo_done_recycler"
-                    android:layout_below="@+id/todo_doing_recycler">
+                    android:layout_below="@+id/text_done">
 
                 </android.support.v7.widget.RecyclerView>
 

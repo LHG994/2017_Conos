@@ -30,7 +30,6 @@ public class BoardFragment extends Fragment {
     public static board_adapter mboard_adapter;
     public static ArrayList<board_item> board_itemList;
     private RecyclerView.LayoutManager board_LayoutManager;
-    //private RecyclerView.LayoutManager board_fav_LayoutManager;
     //recycler view ingredient end
 
     @Nullable
@@ -95,7 +94,6 @@ public class BoardFragment extends Fragment {
 
     public class board_adapter extends RecyclerView.Adapter<board_adapter.ViewHolder> {
         private ArrayList<board_item> temp_board_array;
-        private final board_onclick_listener board_onclick = new board_onclick_listener();
 
         public board_adapter(ArrayList<board_item> board_itemList) {
             temp_board_array = board_itemList;
@@ -105,13 +103,34 @@ public class BoardFragment extends Fragment {
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item_board, parent, false);
-            view.setOnClickListener(board_onclick);
+            view.setOnClickListener(new board_onclick_listener());
             return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
+            final int itemposition = position;
+
             holder.board_name_text.setText(temp_board_array.get(position).getName());
+
+            class board_button_onclick_listener implements View.OnClickListener {
+                @Override
+                public void onClick(final View view) {
+                    board_item item = board_itemList.get(itemposition);
+                    Toast.makeText(view.getContext(), "button clicked", Toast.LENGTH_LONG).show();
+
+                    if(item.getState() == 0){
+
+                    }
+
+                    else {
+
+                    }
+
+                }
+
+            }
+
             holder.board_favorite_button.setOnClickListener(new board_button_onclick_listener());
         }
 
@@ -143,17 +162,6 @@ public class BoardFragment extends Fragment {
                 Toast.makeText(view.getContext(), item.getName() + " selected", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(view.getContext(), CardActivity.class);
                 view.getContext().startActivity(intent);
-
-            }
-
-        }
-
-        //각 버튼에 적용될 리스너
-        class board_button_onclick_listener implements View.OnClickListener {
-            @Override
-            public void onClick(final View view) {
-
-                Toast.makeText(view.getContext(), "button clicked", Toast.LENGTH_LONG).show();
 
             }
 

@@ -10,6 +10,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
+import de.mrapp.android.dialog.MaterialDialog;
+
 import static com.example.lhg.new_proto.BoardFragment.board_itemList;
 import static com.example.lhg.new_proto.BoardFragment.mboard_adapter;
 
@@ -55,8 +57,6 @@ public class BoardActivity extends AppCompatActivity {
             }
         });
         //Create tabs end
-
-
 
         //Board button listener
         findViewById(R.id.board_button).setOnClickListener(new View.OnClickListener() {
