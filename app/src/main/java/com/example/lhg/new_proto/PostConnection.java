@@ -6,6 +6,9 @@ package com.example.lhg.new_proto;
 
 import android.content.ContentValues;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,33 +16,19 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Map;
 
 public class PostConnection {
-    public String request(String _url, ContentValues _params){
+    public String request(String _url, ContentValues _params, String [] _w, String Token){
         HttpURLConnection urlConn = null;
-        StringBuffer sbParams = new StringBuffer();
 
-        // 파라미터 검사.
-        if (_params == null)
-            sbParams.append("");
-        else {
-            boolean isAnd = false;
-            String key;
-            String value;
-
-            for(Map.Entry<String, Object> parameter : _params.valueSet()){
-                key = parameter.getKey();
-                value = parameter.getValue().toString();
-                if (isAnd)
-                    sbParams.append("&");
-
-                sbParams.append(key).append("=").append(value);
-                if (!isAnd)
-                    if (_params.size() >= 2)
-                        isAnd = true;
-            }
+        //파라미터 json object로 변환
+        JSONObject  job = new JSONObject();
+        for(int i=0; i<_w.length; i++){
+            try{
+                job.put(_w[i],_params.get(_w[i]));
+            }catch (JSONException e){return e.getMessage();}
         }
+
 
         try{
             URL url = new URL(_url);
@@ -47,20 +36,18 @@ public class PostConnection {
 
             // urlConn 설정.
             urlConn.setRequestMethod("POST");
-            urlConn.setRequestProperty("Accept-Charset", "UTF-8");
-            urlConn.setRequestProperty("Context_Type", "application/json");
+            urlConn.setRequestProperty("Content-Type", "application/json");
 
-            // parameter 전달 및 데이터 읽어오기.
-            String strParams = sbParams.toString();
             OutputStream os = urlConn.getOutputStream();
-            os.write(strParams.getBytes("UTF-8"));
+            os.write(job.toString().getBytes("ascii"));
             os.flush();
             os.close();
+
 
             // 연결 요청 확인.
             // 실패 시 null을 리턴하고 메서드를 종료.
             if (urlConn.getResponseCode() != HttpURLConnection.HTTP_OK)
-                return urlConn.getResponseMessage();
+                return "Fail";
 
             // 읽어온 결과물 리턴.
             // 요청한 URL의 출력물을 BufferedReader로 받는다.
@@ -73,7 +60,6 @@ public class PostConnection {
             while ((line = reader.readLine()) != null){
                 page += line;
             }
-
             return page;
 
         } catch (MalformedURLException e) { // for URL.

@@ -36,20 +36,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/login_button"
-
         android:text="Login"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="25dp"
         android:layout_below="@+id/password_et"
-        android:layout_alignEnd="@+id/password_et" />
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        />
 
-    <Button
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/join_button"
-
-        android:text="Join"
-        android:layout_alignBaseline="@+id/login_button"
-        android:layout_alignBottom="@+id/login_button"
-        android:layout_alignStart="@+id/password_et" />
+        android:layout_below="@+id/login_button"
+        android:clickable="true"
+        android:textColor="@color/cardview_dark_background"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:textStyle="italic"/>
 
 </RelativeLayout>

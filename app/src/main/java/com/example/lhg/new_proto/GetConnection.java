@@ -13,7 +13,7 @@ import java.net.URL;
 
 public class GetConnection {
 
-    public String request(String _url){
+    public String request(String _url, String _token){
         HttpURLConnection urlConn = null;
 
         try{
@@ -23,12 +23,13 @@ public class GetConnection {
             // urlConn 설정.
             urlConn.setRequestMethod("GET");
             urlConn.setRequestProperty("Accept-Charset", "UTF-8");
-            urlConn.setRequestProperty("Context_Type", "application/json");
+            urlConn.setRequestProperty("Content-Type", "application/json");
+            urlConn.setRequestProperty("Authorization", "Bearer " + _token);
 
             // 연결 요청 확인.
             // 실패 시 null을 리턴하고 메서드를 종료.
             if (urlConn.getResponseCode() != HttpURLConnection.HTTP_OK)
-                return "HTTP ERROR";
+                return urlConn.getResponseMessage();
 
             // 읽어온 결과물 리턴.
             // 요청한 URL의 출력물을 BufferedReader로 받는다.

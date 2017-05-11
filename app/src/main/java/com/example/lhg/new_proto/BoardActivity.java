@@ -3,14 +3,15 @@ package com.example.lhg.new_proto;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
-
-import de.mrapp.android.dialog.MaterialDialog;
 
 import static com.example.lhg.new_proto.BoardFragment.board_itemList;
 import static com.example.lhg.new_proto.BoardFragment.mboard_adapter;
@@ -20,10 +21,15 @@ public class BoardActivity extends AppCompatActivity {
     //github
     Toolbar toolbar;
 
+    String token;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_board);
+
+        Intent intent = getIntent();
+        token = intent.getStringExtra("token");
 
 
         toolbar = (Toolbar) findViewById(R.id.board_toolbar);
@@ -31,6 +37,7 @@ public class BoardActivity extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
+
 
 
         //Create tabs
@@ -92,6 +99,40 @@ public class BoardActivity extends AppCompatActivity {
                 mboard_adapter.notifyDataSetChanged();
 
             }
+    }
+
+    public class Board_viewpager extends FragmentStatePagerAdapter {
+        int _numOfTabs;
+
+        public Board_viewpager(FragmentManager fm, int numOfTabs) {
+            super(fm);
+            this._numOfTabs = numOfTabs;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    ColleagueFragment cf = new ColleagueFragment();
+
+                    return cf;
+                case 1:
+                    BoardFragment bf = new BoardFragment();
+
+                    Bundle bundle = new Bundle(1); // 파라미터는 전달할 데이터 개수
+                    bundle.putString("token", token); // key , value
+                    bf.setArguments(bundle);
+
+                    return bf;
+                default:
+                    return null;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return _numOfTabs;
+        }
     }
 }
 

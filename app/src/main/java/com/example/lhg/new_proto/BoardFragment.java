@@ -1,6 +1,8 @@
 package com.example.lhg.new_proto;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -31,6 +33,8 @@ public class BoardFragment extends Fragment {
     public static ArrayList<board_item> board_itemList;
     private RecyclerView.LayoutManager board_LayoutManager;
     //recycler view ingredient end
+    /////// 토큰 ////
+    public String token;
 
     @Nullable
     @Override
@@ -53,11 +57,24 @@ public class BoardFragment extends Fragment {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView_board.getContext(), DividerItemDecoration.VERTICAL);
         recyclerView_board.addItemDecoration(dividerItemDecoration);
 
-        board_item item = new board_item();
+        /*board_item item = new board_item();
         item.setName("Hello");
         board_itemList.add(item);
-        mboard_adapter.notifyDataSetChanged();
+        mboard_adapter.notifyDataSetChanged();*/
         //recycler view setting end
+
+        ////////////////////////////////////////////////////////////////
+        String url = "http://166.62.32.120:5000/";
+
+        token = getArguments().getString("token");
+        //token = "eyJleHAiOjE0OTUwNTE1NDMsImFsZyI6IkhTMjU2IiwiaWF0IjoxNDk0NDQ2NzQzfQ.eyJ1c2VyX25hbWUiOiJHb29kIE5hbWUiLCJ1c2VyX2lkIjoxLCJ1c2VyX2VtYWlsIjoic29tZTFAZ29vZCJ9.dcJJT-O65wtuY628T9A4QgUfUBML9344VbbFx3ig3ws";
+        /*values.put("name","test");
+        values.put("email","ads@qqq");
+        values.put("password","1234");*/
+
+        // AsyncTask를 통해 HttpURLConnection 수행.
+        NetworkTask networkTask = new NetworkTask(url, null,token);
+        networkTask.execute();
 
         return v;
     }
@@ -167,6 +184,40 @@ public class BoardFragment extends Fragment {
 
         }
 
+    }
+    public class NetworkTask extends AsyncTask<Void, Void, String[]> {
+
+        private String url;
+        private ContentValues values;
+        private String token;
+
+        public NetworkTask(String url, ContentValues values, String token) {
+            this.url = url;
+            this.values = values;
+            this.token = token;
+        }
+
+        @Override
+        protected String[] doInBackground(Void... params) {
+            FunctionResult functionResult = new FunctionResult();
+            String[] sss = functionResult.arrayQuest(url, "user_board", null, token);
+
+            return sss;
+        }
+
+        @Override
+        protected void onPostExecute(String[] s) {
+            super.onPostExecute(s);
+
+            //doInBackground()로 부터 리턴된 값이 onPostExecute()의 매개변수로 넘어오므로 s를 출력한다.
+
+            for (int i = 0; i < s.length; i++) {
+                board_item item = new board_item();
+                item.setName(s[i]);
+                board_itemList.add(item);
+                mboard_adapter.notifyDataSetChanged();
+            }
+        }
     }
 
 }

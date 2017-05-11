@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -47,60 +48,82 @@ public class CardFragment extends Fragment {
     public static ArrayList<Card_Todo_Item_Done> done_itemList;
     private RecyclerView.LayoutManager done_LayoutManager;
 
+    Handler handler = null;
+
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(fragment_card, container, false);
+        final View v = inflater.inflate(fragment_card, container, false);
+
+        handler = new Handler();
 
 
-        //recycler view setting
-        recyclerView_todo_notyet = (RecyclerView) v.findViewById(R.id.todo_notyet_recycler);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        notyet_itemList = new ArrayList<Card_Todo_Item_Notyet>();
+                //recycler view setting
+                recyclerView_todo_notyet = (RecyclerView) v.findViewById(R.id.todo_notyet_recycler);
 
-        notyet_LayoutManager = new LinearLayoutManager(getActivity());
+                notyet_itemList = new ArrayList<Card_Todo_Item_Notyet>();
 
-        notyet_adapter = new Card_Todo_Item_Notyet_adapter(notyet_itemList);
-        recyclerView_todo_notyet.setAdapter(notyet_adapter);
-        recyclerView_todo_notyet.setLayoutManager(notyet_LayoutManager);
-        recyclerView_todo_notyet.setItemAnimator(new DefaultItemAnimator());
+                notyet_LayoutManager = new LinearLayoutManager(getActivity());
 
-        DividerItemDecoration dividerItemDecoration_notyet = new DividerItemDecoration(recyclerView_todo_notyet.getContext(), DividerItemDecoration.VERTICAL);
-        recyclerView_todo_notyet.addItemDecoration(dividerItemDecoration_notyet);
-        //recycler view setting end
+                notyet_adapter = new Card_Todo_Item_Notyet_adapter(notyet_itemList);
+                recyclerView_todo_notyet.setAdapter(notyet_adapter);
+                recyclerView_todo_notyet.setLayoutManager(notyet_LayoutManager);
+                recyclerView_todo_notyet.setItemAnimator(new DefaultItemAnimator());
 
-        //recycler view setting
-        recyclerView_todo_doing = (RecyclerView) v.findViewById(R.id.todo_doing_recycler);
+                DividerItemDecoration dividerItemDecoration_notyet = new DividerItemDecoration(recyclerView_todo_notyet.getContext(), DividerItemDecoration.VERTICAL);
+                recyclerView_todo_notyet.addItemDecoration(dividerItemDecoration_notyet);
+                //recycler view setting end
 
-        doing_itemList = new ArrayList<Card_Todo_Item_Doing>();
+            }
+        }).start();
 
-        doing_LayoutManager = new LinearLayoutManager(getActivity());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //recycler view setting
+                recyclerView_todo_doing = (RecyclerView) v.findViewById(R.id.todo_doing_recycler);
 
-        doing_adapter = new Card_Todo_Item_Doing_adapter(doing_itemList);
-        recyclerView_todo_doing.setAdapter(doing_adapter);
-        recyclerView_todo_doing.setLayoutManager(doing_LayoutManager);
-        recyclerView_todo_doing.setItemAnimator(new DefaultItemAnimator());
+                doing_itemList = new ArrayList<Card_Todo_Item_Doing>();
 
-        DividerItemDecoration dividerItemDecoration_doing = new DividerItemDecoration(recyclerView_todo_doing.getContext(), DividerItemDecoration.VERTICAL);
-        recyclerView_todo_doing.addItemDecoration(dividerItemDecoration_doing);
-        //recycler view setting end
+                doing_LayoutManager = new LinearLayoutManager(getActivity());
 
-        //recycler view setting
-        recyclerView_todo_done = (RecyclerView) v.findViewById(R.id.todo_done_recycler);
+                doing_adapter = new Card_Todo_Item_Doing_adapter(doing_itemList);
+                recyclerView_todo_doing.setAdapter(doing_adapter);
+                recyclerView_todo_doing.setLayoutManager(doing_LayoutManager);
+                recyclerView_todo_doing.setItemAnimator(new DefaultItemAnimator());
 
-        done_itemList = new ArrayList<Card_Todo_Item_Done>();
+                DividerItemDecoration dividerItemDecoration_doing = new DividerItemDecoration(recyclerView_todo_doing.getContext(), DividerItemDecoration.VERTICAL);
+                recyclerView_todo_doing.addItemDecoration(dividerItemDecoration_doing);
+                //recycler view setting end
+            }
+        }).start();
 
-        done_LayoutManager = new LinearLayoutManager(getActivity());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //recycler view setting
+                recyclerView_todo_done = (RecyclerView) v.findViewById(R.id.todo_done_recycler);
 
-        done_adapter = new Card_Todo_Item_Done_adapter(done_itemList);
-        recyclerView_todo_done.setAdapter(done_adapter);
-        recyclerView_todo_done.setLayoutManager(done_LayoutManager);
-        recyclerView_todo_done.setItemAnimator(new DefaultItemAnimator());
+                done_itemList = new ArrayList<Card_Todo_Item_Done>();
 
-        DividerItemDecoration dividerItemDecoration_done = new DividerItemDecoration(recyclerView_todo_done.getContext(), DividerItemDecoration.VERTICAL);
-        recyclerView_todo_doing.addItemDecoration(dividerItemDecoration_done);
-        //recycler view setting end
+                done_LayoutManager = new LinearLayoutManager(getActivity());
+
+                done_adapter = new Card_Todo_Item_Done_adapter(done_itemList);
+                recyclerView_todo_done.setAdapter(done_adapter);
+                recyclerView_todo_done.setLayoutManager(done_LayoutManager);
+                recyclerView_todo_done.setItemAnimator(new DefaultItemAnimator());
+
+                DividerItemDecoration dividerItemDecoration_done = new DividerItemDecoration(recyclerView_todo_done.getContext(), DividerItemDecoration.VERTICAL);
+                recyclerView_todo_doing.addItemDecoration(dividerItemDecoration_done);
+                //recycler view setting end
+            }
+        }).start();
+
 
 
         /*Card_Todo_Item_Notyet item1 = new Card_Todo_Item_Notyet();
@@ -114,16 +137,22 @@ public class CardFragment extends Fragment {
         notyet_itemList.add(item3);
         notyet_adapter.notifyDataSetChanged();
 */
-        url += "/user/get_token/";
+        ////////////////////////////////////////////////////////////////
+        String url = "http://166.62.32.120:5000/";
         ContentValues values = new ContentValues();
 
+        /*values.put("name","new");
         values.put("email","some1@good");
-        values.put("password","12345");
+        values.put("password","12345");*/
+        String token = "eyJleHAiOjE0OTUwNDUxNzEsImFsZyI6IkhTMjU2IiwiaWF0IjoxNDk0NDQwMzcxfQ.eyJ1c2VyX25hbWUiOiJHb29kIE5hbWUiLCJ1c2VyX2lkIjoxLCJ1c2VyX2VtYWlsIjoic29tZTFAZ29vZCJ9.1kTLbqMBSsp1EtV0IK6WW00nEQ5GuzYO-GMIGgktIUQ";
 
-        NetworkTask networkTask = new NetworkTask(url, values);
+        /*values.put("name","test");
+        values.put("email","ads@qqq");
+        values.put("password","1234");*/
+
+        // AsyncTask를 통해 HttpURLConnection 수행.
+        NetworkTask networkTask = new NetworkTask(url, values, token);
         networkTask.execute();
-
-
 
 
         return v;
@@ -183,7 +212,6 @@ public class CardFragment extends Fragment {
             //리스너에서 아이템의 변수들을 사용 가능하도록(get으로 버튼 등을 가져올 수 있도록) 세팅해준다.
             final int itemposition = position;
             Card_Todo_Item_Notyet item = notyet_itemList.get(itemposition);
-            item.setDelete_button(holder.Delete_button);
 
             class notyet_button_onclick_listener implements View.OnClickListener {
                 @Override
@@ -191,32 +219,24 @@ public class CardFragment extends Fragment {
                     Card_Todo_Item_Notyet item = notyet_itemList.get(itemposition);
                     //여기서 아이템을 가리키게 되었으니까..
 
-                    if(view.getId() == R.id.todo_button) {
-                        Toast.makeText(view.getContext(), item.getTodo_name() + ", normal button selected", Toast.LENGTH_LONG).show();
+                    Toast.makeText(view.getContext(), item.getTodo_name() + ", normal button selected", Toast.LENGTH_LONG).show();
 
-                        Card_Todo_Item_Doing doing_item = new Card_Todo_Item_Doing();
+                    Card_Todo_Item_Doing doing_item = new Card_Todo_Item_Doing();
 
 
-                        doing_item.setTodo_name(item.getTodo_name());
-                        doing_itemList.add(doing_item);
-                        doing_adapter.notifyDataSetChanged();
+                    doing_item.setTodo_name(item.getTodo_name());
+                    doing_itemList.add(doing_item);
 
-                        notyet_itemList.remove(itemposition);
-                        notyet_adapter.notifyDataSetChanged();
 
-                    }
+                    notyet_itemList.remove(itemposition);
 
-                    else{
-                        Toast.makeText(view.getContext(), item.getTodo_name() + ", undo button selected", Toast.LENGTH_LONG).show();
-                        notyet_itemList.remove(itemposition);
-                        notyet_adapter.notifyDataSetChanged();
-                    }
+                    doing_adapter.notifyDataSetChanged();
+                    notyet_adapter.notifyDataSetChanged();
 
                 }
             }
 
             holder.Pickup_button.setOnClickListener(new notyet_button_onclick_listener());
-            holder.Delete_button.setOnClickListener(new notyet_button_onclick_listener());
 
         }
 
@@ -227,13 +247,11 @@ public class CardFragment extends Fragment {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public TextView Todo_name;
             public Button Pickup_button;
-            public Button Delete_button;
 
             public ViewHolder(View itemView) {
                 super(itemView);
                 Todo_name = (TextView) itemView.findViewById(R.id.todo_name);
                 Pickup_button = (Button) itemView.findViewById(R.id.todo_button);
-                Delete_button = (Button) itemView.findViewById(R.id.todo_undo_button);
             }
         }
 
@@ -247,17 +265,18 @@ public class CardFragment extends Fragment {
 
                 class ok_button_listener implements DialogInterface.OnClickListener {
                     @Override
-                    public void onClick(DialogInterface di, int i){
+                    public void onClick(DialogInterface di, int i) {
                         Toast.makeText(innerV.getContext(), "ok button", Toast.LENGTH_LONG).show();
                         notyet_itemList.remove(position);
                         notyet_adapter.notifyDataSetChanged();
+                        //그리고, 서버에 알려야지
                     }
                 }
 
                 MaterialDialog.Builder dialogBuilder = new MaterialDialog.Builder(getActivity());
                 dialogBuilder.setTitle("Delete Item");
-                dialogBuilder.setMessage(".");
-                dialogBuilder.setPositiveButton(android.R.string.ok, new ok_button_listener()  );
+                dialogBuilder.setMessage("삭제된 항목은 복구할 수 없습니다.");
+                dialogBuilder.setPositiveButton(android.R.string.ok, new ok_button_listener());
                 dialogBuilder.setNegativeButton(android.R.string.cancel, null);
                 MaterialDialog dialog = dialogBuilder.create();
                 dialog.show();
@@ -274,7 +293,6 @@ public class CardFragment extends Fragment {
         private String todo_name;
         private String person_name;
         private Button doing_button;
-        private Button undo_button;
         private int personID = 0;
 
         public void setTodo_name(String todo_name) {
@@ -287,10 +305,6 @@ public class CardFragment extends Fragment {
 
         public void setDoing_button(Button doing_button) {
             this.doing_button = doing_button;
-        }
-
-        public void setUndo_button(Button undo_button) {
-            this.undo_button = undo_button;
         }
 
         public void setPersonID(int personID) {
@@ -309,10 +323,6 @@ public class CardFragment extends Fragment {
             return doing_button;
         }
 
-        public Button getUndo_button() {
-            return undo_button;
-        }
-
         public int getPersonID() {
             return personID;
         }
@@ -329,6 +339,7 @@ public class CardFragment extends Fragment {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item_todo, parent, false);
+            view.setOnLongClickListener(new Doing_item_onclick_listener());
             return new ViewHolder(view);
         }
 
@@ -341,12 +352,25 @@ public class CardFragment extends Fragment {
             class doing_button_onclick_listener implements View.OnClickListener {
                 @Override
                 public void onClick(final View view) {
+                    Card_Todo_Item_Doing item = doing_itemList.get(itemposition);
+                    //여기서 아이템을 가리키게 되었으니까..
+
+                    Toast.makeText(view.getContext(), item.getTodo_name() + ", normal button selected", Toast.LENGTH_LONG).show();
+
+                    doing_itemList.remove(itemposition);
+                    doing_adapter.notifyDataSetChanged();
+
+                    Card_Todo_Item_Done done_item = new Card_Todo_Item_Done();
+
+                    done_item.setTodo_name(item.getTodo_name());
+                    done_itemList.add(done_item);
+                    done_adapter.notifyDataSetChanged();
+
 
                 }
             }
 
             holder.Doing_button.setOnClickListener(new doing_button_onclick_listener());
-            holder.Undo_button.setOnClickListener(new doing_button_onclick_listener());
         }
 
         public int getItemCount() {
@@ -357,15 +381,43 @@ public class CardFragment extends Fragment {
             public TextView Todo_name;
             public TextView Person_name;
             public Button Doing_button;
-            public Button Undo_button;
 
             public ViewHolder(View itemView) {
                 super(itemView);
 
                 Todo_name = (TextView) itemView.findViewById(R.id.todo_name);
                 Doing_button = (Button) itemView.findViewById(R.id.todo_button);
-                Undo_button = (Button) itemView.findViewById(R.id.todo_undo_button);
 
+            }
+        }
+
+        class Doing_item_onclick_listener implements View.OnLongClickListener {
+            @Override
+            public boolean onLongClick(View view) {
+                final int position = recyclerView_todo_notyet.getChildLayoutPosition(view);
+                final View innerV = view;
+
+                Card_Todo_Item_Notyet item = notyet_itemList.get(position);
+
+                class ok_button_listener implements DialogInterface.OnClickListener {
+                    @Override
+                    public void onClick(DialogInterface di, int i) {
+                        Toast.makeText(innerV.getContext(), "ok button", Toast.LENGTH_LONG).show();
+                        notyet_itemList.remove(position);
+                        notyet_adapter.notifyDataSetChanged();
+                        //그리고, 서버에 알려야지
+                    }
+                }
+
+                MaterialDialog.Builder dialogBuilder = new MaterialDialog.Builder(getActivity());
+                dialogBuilder.setTitle("Delete Item");
+                dialogBuilder.setMessage("삭제된 항목은 복구할 수 없습니다.");
+                dialogBuilder.setPositiveButton(android.R.string.ok, new ok_button_listener());
+                dialogBuilder.setNegativeButton(android.R.string.cancel, null);
+                MaterialDialog dialog = dialogBuilder.create();
+                dialog.show();
+
+                return false;
             }
         }
 
@@ -380,7 +432,6 @@ public class CardFragment extends Fragment {
         private int number_of_like = 0;
         private boolean liked = false;
         private Button like_button;
-        private Button Undo_button;
         private int personID;
 
         public void setPerson_name(String person_name) {
@@ -389,10 +440,6 @@ public class CardFragment extends Fragment {
 
         public void setPersonID(int personID) {
             this.personID = personID;
-        }
-
-        public void setUndo_button(Button undo_button) {
-            Undo_button = undo_button;
         }
 
         public void setLike_button(Button like_button) {
@@ -417,10 +464,6 @@ public class CardFragment extends Fragment {
 
         public int getPersonID() {
             return personID;
-        }
-
-        public Button getUndo_button() {
-            return Undo_button;
         }
 
         public Button getLike_button() {
@@ -464,29 +507,21 @@ public class CardFragment extends Fragment {
             class done_button_onclick_listener implements View.OnClickListener {
                 @Override
                 public void onClick(final View view) {
-                    Card_Todo_Item_Notyet item = notyet_itemList.get(itemposition);
                     //여기서 아이템을 가리키게 되었으니까..
 
-                    if (view.getId() == R.id.todo_button) {
-                        Toast.makeText(view.getContext(), item.getTodo_name() + ", normal button selected", Toast.LENGTH_LONG).show();
-                        //버튼을 누르면 어떻게 되더라?
-                        //투두_던으로 바꾼 장본인에겐 버튼 비활성
-                        //그 밖의 사람들은
-                        //하트를 눌러 라이크 카운트를 증가
-                        //카운트가 1 늘 때마다 개인정보란의 카운트도 같이 증가
-                        //하트를 다시 누르면 라이크 취소
-                    } else {
-                        Toast.makeText(view.getContext(), item.getTodo_name() + ", undo button selected", Toast.LENGTH_LONG).show();
-                        notyet_itemList.remove(itemposition);
-                        notyet_adapter.notifyDataSetChanged();
-                    }
+                    //버튼을 누르면 어떻게 되더라?
+                    //투두_던으로 바꾼 장본인에겐 버튼 비활성
+                    //그 밖의 사람들은
+                    //하트를 눌러 라이크 카운트를 증가
+                    //카운트가 1 늘 때마다 개인정보란의 카운트도 같이 증가
+                    //하트를 다시 누르면 라이크 취소
+
 
                 }
 
             }
 
             holder.Like_button.setOnClickListener(new done_button_onclick_listener());
-            holder.Undo_button.setOnClickListener(new done_button_onclick_listener());
         }
 
         public int getItemCount() {
@@ -497,10 +532,14 @@ public class CardFragment extends Fragment {
             public TextView Todo_name;
             public TextView Person_name;
             public Button Like_button;
-            public Button Undo_button;
 
             public ViewHolder(View itemView) {
                 super(itemView);
+
+                Todo_name = (TextView) itemView.findViewById(R.id.todo_name);
+                Like_button = (Button) itemView.findViewById(R.id.todo_button);
+                Person_name = (TextView)itemView.findViewById(R.id.todo_person_name);
+
             }
         }
 
@@ -511,18 +550,20 @@ public class CardFragment extends Fragment {
 
         private String url;
         private ContentValues values;
+        private String token;
 
-        public NetworkTask(String url, ContentValues values) {
+        public NetworkTask(String url, ContentValues values, String token) {
             this.url = url;
             this.values = values;
+            this.token = token;
         }
 
         @Override
         protected String[] doInBackground(Void... params) {
             FunctionResult functionResult = new FunctionResult();
-            String[] ss = functionResult.Quest(url, "todos", null);
+            String[] sss = functionResult.arrayQuest(url, "user_board", null, token);
 
-            return ss;
+            return sss;
         }
 
         @Override
@@ -539,7 +580,6 @@ public class CardFragment extends Fragment {
             }
         }
     }
-
 }
 
 
