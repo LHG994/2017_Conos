@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -124,19 +125,6 @@ public class CardFragment extends Fragment {
             }
         }).start();
 
-
-
-        /*Card_Todo_Item_Notyet item1 = new Card_Todo_Item_Notyet();
-        item1.setTodo_name("Hellooooo1");
-        notyet_itemList.add(item1);
-        Card_Todo_Item_Notyet item2 = new Card_Todo_Item_Notyet();
-        item2.setTodo_name("Hellooooo2");
-        notyet_itemList.add(item2);
-        Card_Todo_Item_Notyet item3 = new Card_Todo_Item_Notyet();
-        item3.setTodo_name("Hellooooo3");
-        notyet_itemList.add(item3);
-        notyet_adapter.notifyDataSetChanged();
-*/
         ////////////////////////////////////////////////////////////////
         String url = "http://166.62.32.120:5000/";
         ContentValues values = new ContentValues();
@@ -200,7 +188,7 @@ public class CardFragment extends Fragment {
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item_todo, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item_todo_notyet, parent, false);
             view.setOnLongClickListener(new Notyet_item_onclick_listener());
             return new ViewHolder(view);
         }
@@ -338,7 +326,7 @@ public class CardFragment extends Fragment {
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item_todo, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item_todo_doing, parent, false);
             view.setOnLongClickListener(new Doing_item_onclick_listener());
             return new ViewHolder(view);
         }
@@ -346,6 +334,15 @@ public class CardFragment extends Fragment {
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             holder.Todo_name.setText(temp_Doing_array.get(position).getTodo_name());
+            holder.Person_name.setText("이현규가 수행중!");
+            holder.Doing_button.setText("Complete!");
+
+            //이걸 하기로 한 사람이 나라면
+            //완료 버튼으로 바뀌고
+            //내가 아니라면
+            //재촉하기 버튼으로 바뀌어야겠지
+            //텍스트는 위처럼 holder로 설정해주고
+            //리스너는 아래에서 if문으로 배정해주자
 
             final int itemposition = position;
 
@@ -387,6 +384,7 @@ public class CardFragment extends Fragment {
 
                 Todo_name = (TextView) itemView.findViewById(R.id.todo_name);
                 Doing_button = (Button) itemView.findViewById(R.id.todo_button);
+                Person_name = (TextView)itemView.findViewById(R.id.todo_person_name);
 
             }
         }
@@ -394,24 +392,22 @@ public class CardFragment extends Fragment {
         class Doing_item_onclick_listener implements View.OnLongClickListener {
             @Override
             public boolean onLongClick(View view) {
-                final int position = recyclerView_todo_notyet.getChildLayoutPosition(view);
+                final int position = recyclerView_todo_doing.getChildLayoutPosition(view);
                 final View innerV = view;
 
-                Card_Todo_Item_Notyet item = notyet_itemList.get(position);
+                Card_Todo_Item_Doing item = doing_itemList.get(position);
 
                 class ok_button_listener implements DialogInterface.OnClickListener {
                     @Override
                     public void onClick(DialogInterface di, int i) {
                         Toast.makeText(innerV.getContext(), "ok button", Toast.LENGTH_LONG).show();
-                        notyet_itemList.remove(position);
-                        notyet_adapter.notifyDataSetChanged();
-                        //그리고, 서버에 알려야지
+                        //서버에 알리고 리프레쉬
                     }
                 }
 
                 MaterialDialog.Builder dialogBuilder = new MaterialDialog.Builder(getActivity());
-                dialogBuilder.setTitle("Delete Item");
-                dialogBuilder.setMessage("삭제된 항목은 복구할 수 없습니다.");
+                dialogBuilder.setTitle("Undo Item");
+                dialogBuilder.setMessage("항목이 todo로 돌아갑니다.");
                 dialogBuilder.setPositiveButton(android.R.string.ok, new ok_button_listener());
                 dialogBuilder.setNegativeButton(android.R.string.cancel, null);
                 MaterialDialog dialog = dialogBuilder.create();
@@ -431,7 +427,7 @@ public class CardFragment extends Fragment {
         private String person_name;
         private int number_of_like = 0;
         private boolean liked = false;
-        private Button like_button;
+        private ImageButton like_button;
         private int personID;
 
         public void setPerson_name(String person_name) {
@@ -442,7 +438,7 @@ public class CardFragment extends Fragment {
             this.personID = personID;
         }
 
-        public void setLike_button(Button like_button) {
+        public void setLike_button(ImageButton like_button) {
             this.like_button = like_button;
         }
 
@@ -466,7 +462,7 @@ public class CardFragment extends Fragment {
             return personID;
         }
 
-        public Button getLike_button() {
+        public ImageButton getLike_button() {
             return like_button;
         }
 
@@ -493,29 +489,44 @@ public class CardFragment extends Fragment {
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item_todo, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item_todo_done, parent, false);
+            view.setOnLongClickListener(new Done_item_onclick_listener());
             return new ViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
+        public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.Todo_name.setText(temp_Done_array.get(position).getTodo_name());
             holder.Person_name.setText(temp_Done_array.get(position).getPerson_name());
+
+            //완료된 항목엔 취소선을 그어놓자
+            //그리고 아래에는 누가 완료했는지 적어놓고
+            //내가 한 게 아니라면
+            //좋아요 버튼이 되겠고
+            //liked변수를 써서 내가 좋아요를 눌렀는지 판단하는거랑
+            //numberoflike를 써서 좋아요의 수를 판단?
+            //장형이 만든거랑은 방식이 좀 다른 것 같으니, 읽어보고 다시 생각해야
+            //내가 한 거라면
+            //버튼은 누를 수 없지만, 좋아요의 수가 보인다.
+
+            holder.Like_button.setBackground(getResources().getDrawable(R.drawable.heart1));
+
+
 
             final int itemposition = position;
 
             class done_button_onclick_listener implements View.OnClickListener {
                 @Override
                 public void onClick(final View view) {
-                    //여기서 아이템을 가리키게 되었으니까..
+                    if(holder.statement == 0){
+                        holder.Like_button.setBackground(getResources().getDrawable(R.drawable.heart2));
+                        holder.statement = 1;
+                    }
 
-                    //버튼을 누르면 어떻게 되더라?
-                    //투두_던으로 바꾼 장본인에겐 버튼 비활성
-                    //그 밖의 사람들은
-                    //하트를 눌러 라이크 카운트를 증가
-                    //카운트가 1 늘 때마다 개인정보란의 카운트도 같이 증가
-                    //하트를 다시 누르면 라이크 취소
-
+                    else{
+                        holder.Like_button.setBackground(getResources().getDrawable(R.drawable.heart1));
+                        holder.statement = 0;
+                    }
 
                 }
 
@@ -531,15 +542,44 @@ public class CardFragment extends Fragment {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public TextView Todo_name;
             public TextView Person_name;
-            public Button Like_button;
+            public ImageButton Like_button;
+            public int statement = 0;
 
             public ViewHolder(View itemView) {
                 super(itemView);
 
                 Todo_name = (TextView) itemView.findViewById(R.id.todo_name);
-                Like_button = (Button) itemView.findViewById(R.id.todo_button);
+                Like_button = (ImageButton) itemView.findViewById(R.id.todo_button);
                 Person_name = (TextView)itemView.findViewById(R.id.todo_person_name);
 
+            }
+        }
+
+        class Done_item_onclick_listener implements View.OnLongClickListener {
+            @Override
+            public boolean onLongClick(View view) {
+                final int position = recyclerView_todo_done.getChildLayoutPosition(view);
+                final View innerV = view;
+
+                Card_Todo_Item_Done item = done_itemList.get(position);
+
+                class ok_button_listener implements DialogInterface.OnClickListener {
+                    @Override
+                    public void onClick(DialogInterface di, int i) {
+                        Toast.makeText(innerV.getContext(), "ok button", Toast.LENGTH_LONG).show();
+                        //서버에 알리고 리프레쉬
+                    }
+                }
+
+                MaterialDialog.Builder dialogBuilder = new MaterialDialog.Builder(getActivity());
+                dialogBuilder.setTitle("Undo Item");
+                dialogBuilder.setMessage("항목이 doing으로 돌아갑니다.");
+                dialogBuilder.setPositiveButton(android.R.string.ok, new ok_button_listener());
+                dialogBuilder.setNegativeButton(android.R.string.cancel, null);
+                MaterialDialog dialog = dialogBuilder.create();
+                dialog.show();
+
+                return false;
             }
         }
 
