@@ -32,7 +32,14 @@ import static com.example.lhg.new_proto.R.layout.fragment_card;
 //이 위에 투두, 메모, 미트업, 어태치를 올려야 됨
 
 public class CardFragment extends Fragment {
-    String url = "http://166.62.32.120:5000";
+    private String url = "http://166.62.32.120:5000/";
+    private String b_id;
+    private String token;
+    public String [] todoId = new String[10];
+    public String [] doingName = new String[10];
+    public String [] doneName = new String[10];
+    public String [] doingId = new String[10];
+    public String [] doneId = new String[10];
 
     private RecyclerView recyclerView_todo_notyet;
     public static Card_Todo_Item_Notyet_adapter notyet_adapter;
@@ -51,7 +58,24 @@ public class CardFragment extends Fragment {
 
     Handler handler = null;
 
-
+    public void setToken(String token) {
+        this.token= token;
+    }
+    public String getToken() {
+        return token;
+    }
+    public void setB_id(String b_id) {
+        this.b_id= b_id;
+    }
+    public String getB_id() {
+        return b_id;
+    }
+    public void setUrl(String url) {
+        this.url= url;
+    }
+    public String getUrl() {
+        return url;
+    }
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -126,21 +150,18 @@ public class CardFragment extends Fragment {
         }).start();
 
         ////////////////////////////////////////////////////////////////
-        String url = "http://166.62.32.120:5000/";
         ContentValues values = new ContentValues();
 
-        /*values.put("name","new");
-        values.put("email","some1@good");
-        values.put("password","12345");*/
-        String token = "eyJleHAiOjE0OTUwNDUxNzEsImFsZyI6IkhTMjU2IiwiaWF0IjoxNDk0NDQwMzcxfQ.eyJ1c2VyX25hbWUiOiJHb29kIE5hbWUiLCJ1c2VyX2lkIjoxLCJ1c2VyX2VtYWlsIjoic29tZTFAZ29vZCJ9.1kTLbqMBSsp1EtV0IK6WW00nEQ5GuzYO-GMIGgktIUQ";
+        setB_id(getArguments().getString("b_id"));
+        setToken(getArguments().getString("token"));
+        //String token = "eyJleHAiOjE0OTUwNDUxNzEsImFsZyI6IkhTMjU2IiwiaWF0IjoxNDk0NDQwMzcxfQ.eyJ1c2VyX25hbWUiOiJHb29kIE5hbWUiLCJ1c2VyX2lkIjoxLCJ1c2VyX2VtYWlsIjoic29tZTFAZ29vZCJ9.1kTLbqMBSsp1EtV0IK6WW00nEQ5GuzYO-GMIGgktIUQ";
 
-        /*values.put("name","test");
-        values.put("email","ads@qqq");
-        values.put("password","1234");*/
 
         // AsyncTask를 통해 HttpURLConnection 수행.
-        NetworkTask networkTask = new NetworkTask(url, values, token);
+        NetworkTask networkTask = new NetworkTask(null,null);
         networkTask.execute();
+
+
 
 
         return v;
@@ -150,11 +171,16 @@ public class CardFragment extends Fragment {
     //notyet item
     public class Card_Todo_Item_Notyet {
         private String todo_name;
+        private String todo_id;
         private Button pickup_button;
         private Button delete_button;
 
         public void setTodo_name(String todo_name) {
             this.todo_name = todo_name;
+        }
+
+        public void setTodo_id(String todo_id) {
+            this.todo_id = todo_id;
         }
 
         public void setPickup_button(Button pickup_button) {
@@ -168,6 +194,8 @@ public class CardFragment extends Fragment {
         public String getTodo_name() {
             return todo_name;
         }
+
+        public String getTodo_id() { return todo_id; }
 
         public Button getPickup_button() {
             return pickup_button;
@@ -216,10 +244,18 @@ public class CardFragment extends Fragment {
                     doing_itemList.add(doing_item);
 
 
+
+
+                    doing_adapter.notifyItemInserted(doing_itemList.size());
+                    notyet_adapter.notifyItemRemoved(itemposition);
+
                     notyet_itemList.remove(itemposition);
 
-                    doing_adapter.notifyDataSetChanged();
-                    notyet_adapter.notifyDataSetChanged();
+                    /*
+                    NetworkTask networkTask = new NetworkTask("mvGoing",item.getTodo_id());
+                    networkTask.execute();
+                    */
+
 
                 }
             }
@@ -249,15 +285,19 @@ public class CardFragment extends Fragment {
                 final int position = recyclerView_todo_notyet.getChildLayoutPosition(view);
                 final View innerV = view;
 
-                Card_Todo_Item_Notyet item = notyet_itemList.get(position);
 
+                Card_Todo_Item_Notyet item = notyet_itemList.get(position);
                 class ok_button_listener implements DialogInterface.OnClickListener {
                     @Override
                     public void onClick(DialogInterface di, int i) {
+                        Card_Todo_Item_Notyet item = notyet_itemList.get(position);
                         Toast.makeText(innerV.getContext(), "ok button", Toast.LENGTH_LONG).show();
-                        notyet_itemList.remove(position);
-                        notyet_adapter.notifyDataSetChanged();
+                        /*notyet_itemList.remove(position);
+                        notyet_adapter.notifyDataSetChanged();*/
+                        NetworkTask networkTask = new NetworkTask("del",item.getTodo_id());
+                        networkTask.execute();
                         //그리고, 서버에 알려야지
+
                     }
                 }
 
@@ -279,12 +319,17 @@ public class CardFragment extends Fragment {
     //doing item
     public class Card_Todo_Item_Doing {
         private String todo_name;
+        private String todo_id;
         private String person_name;
         private Button doing_button;
         private int personID = 0;
 
         public void setTodo_name(String todo_name) {
             this.todo_name = todo_name;
+        }
+
+        public void setTodo_id(String todo_id) {
+            this.todo_id = todo_id;
         }
 
         public void setPerson_name(String person_name) {
@@ -301,6 +346,10 @@ public class CardFragment extends Fragment {
 
         public String getTodo_name() {
             return todo_name;
+        }
+
+        public String getTodo_id() {
+            return todo_id;
         }
 
         public String getPerson_name() {
@@ -334,7 +383,7 @@ public class CardFragment extends Fragment {
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             holder.Todo_name.setText(temp_Doing_array.get(position).getTodo_name());
-            holder.Person_name.setText("이현규가 수행중!");
+            //holder.Person_name.setText("이현규가 수행중!");
             holder.Doing_button.setText("Complete!");
 
             //이걸 하기로 한 사람이 나라면
@@ -354,16 +403,8 @@ public class CardFragment extends Fragment {
 
                     Toast.makeText(view.getContext(), item.getTodo_name() + ", normal button selected", Toast.LENGTH_LONG).show();
 
-                    doing_itemList.remove(itemposition);
-                    doing_adapter.notifyDataSetChanged();
-
-                    Card_Todo_Item_Done done_item = new Card_Todo_Item_Done();
-
-                    done_item.setTodo_name(item.getTodo_name());
-                    done_itemList.add(done_item);
-                    done_adapter.notifyDataSetChanged();
-
-
+                    NetworkTask networkTask = new NetworkTask("mvDone",item.getTodo_id());
+                    networkTask.execute();
                 }
             }
 
@@ -424,10 +465,11 @@ public class CardFragment extends Fragment {
     //done item
     public class Card_Todo_Item_Done {
         private String todo_name;
+        private String todo_id;
         private String person_name;
         private int number_of_like = 0;
         private boolean liked = false;
-        private ImageButton like_button;
+        private Button like_button;
         private int personID;
 
         public void setPerson_name(String person_name) {
@@ -438,7 +480,7 @@ public class CardFragment extends Fragment {
             this.personID = personID;
         }
 
-        public void setLike_button(ImageButton like_button) {
+        public void setLike_button(Button like_button) {
             this.like_button = like_button;
         }
 
@@ -448,6 +490,10 @@ public class CardFragment extends Fragment {
 
         public void setTodo_name(String todo_name) {
             this.todo_name = todo_name;
+        }
+
+        public void setTodo_id(String todo_id) {
+            this.todo_id = todo_id;
         }
 
         public void setLiked(boolean liked) {
@@ -462,7 +508,7 @@ public class CardFragment extends Fragment {
             return personID;
         }
 
-        public ImageButton getLike_button() {
+        public Button getLike_button() {
             return like_button;
         }
 
@@ -476,6 +522,10 @@ public class CardFragment extends Fragment {
 
         public String getTodo_name() {
             return todo_name;
+        }
+
+        public String getTodo_id() {
+            return todo_id;
         }
     }
 
@@ -589,35 +639,112 @@ public class CardFragment extends Fragment {
     public class NetworkTask extends AsyncTask<Void, Void, String[]> {
 
         private String url;
-        private ContentValues values;
         private String token;
+        private String order;
+        private String t_id;
+        private String b_id;
 
-        public NetworkTask(String url, ContentValues values, String token) {
-            this.url = url;
-            this.values = values;
-            this.token = token;
+        public NetworkTask( String order,String t_id) {
+            this.url = getUrl();
+            this.token = getToken();
+            this.order = order;
+            this.t_id =t_id;
+            this.b_id = getB_id();
         }
 
         @Override
         protected String[] doInBackground(Void... params) {
             FunctionResult functionResult = new FunctionResult();
-            String[] sss = functionResult.arrayQuest(url, "user_board", null, token);
+            this.b_id = getB_id();
+            this.token = getToken();
+            this.url = getUrl();
 
-            return sss;
+            if(order!=null){
+                if(order.equals("del")){
+                    ContentValues values = new ContentValues();
+                    values.put("todo_id",t_id);
+                    String sss = functionResult.stringQuest(url,"delTodo",values,token);//투두 제거
+                }
+                else if(order.equals("mvGoing")){
+                    ContentValues values = new ContentValues();
+                    values.put("todo_id",t_id);
+                    String sss = functionResult.stringQuest(url,"moveOngoing",values,token);//투두 Ongoing으로
+                }
+                else if(order.equals("mvDone")){
+                    ContentValues values = new ContentValues();
+                    values.put("todo_ongoing_id",t_id);
+                    String sss = functionResult.stringQuest(url,"moveDone",values,token);//투두 Done 으로
+                }
+            }
+            /*if(order.equals("del")){
+                ContentValues values = new ContentValues();
+                values.put("todo_id",t_id);
+                String sss = functionResult.stringQuest(url,"delTodo",values,token);//투두 제거
+
+            }*/
+            //else if(order.equals(null)){}
+
+            String [] res = functionResult.todoQuest(url,"notyet_name",b_id,token);
+            doingName = functionResult.todoQuest(url,"doing_name",b_id,token);
+            doneName = functionResult.todoQuest(url,"done_name",b_id,token);
+            todoId = functionResult.todoQuest(url,"notyet_id",b_id,token);
+            doingId = functionResult.todoQuest(url,"doing_id",b_id,token);
+            doneId = functionResult.todoQuest(url,"done_id",b_id,token);
+
+            return res;
         }
 
         @Override
         protected void onPostExecute(String[] s) {
             super.onPostExecute(s);
-
+            notyet_itemList.clear();
+            doing_itemList.clear();
+            done_itemList.clear();
             //doInBackground()로 부터 리턴된 값이 onPostExecute()의 매개변수로 넘어오므로 s를 출력한다.
+            if (!s[0].equals("")) {
+                for (int i = 0; i < s.length; i++) {
+                    Card_Todo_Item_Notyet item = new Card_Todo_Item_Notyet();
+                    item.setTodo_name(s[i]);
+                    item.setTodo_id(todoId[i]);
 
-            for (int i = 0; i < s.length; i++) {
+                    //Log.i("tokenn",b_id);
+                    notyet_itemList.add(item);
+                }
+            } else {
                 Card_Todo_Item_Notyet item = new Card_Todo_Item_Notyet();
-                item.setTodo_name(s[i]);
+                item.setTodo_name("EMPTY");
                 notyet_itemList.add(item);
-                notyet_adapter.notifyDataSetChanged();
             }
+
+            if (!doingId[0].equals("")) {
+                for (int i = 0; i < doingId.length; i++) {
+                    Card_Todo_Item_Doing item2 = new Card_Todo_Item_Doing();
+                    item2.setTodo_name(doingName[i]);
+                    item2.setTodo_id(doingId[i]);
+                    doing_itemList.add(item2);
+                }
+            } else {
+                Card_Todo_Item_Doing item2 = new Card_Todo_Item_Doing();
+                item2.setTodo_name("EMPTY");
+                doing_itemList.add(item2);
+            }
+
+            if (!doneId[0].equals("")) {
+                for (int i = 0; i < doneId.length; i++) {
+                    Card_Todo_Item_Done item3 = new Card_Todo_Item_Done();
+                    item3.setTodo_name(doneName[i]);
+                    item3.setTodo_id(doneId[i]);
+                    done_itemList.add(item3);
+                }
+            } else {
+                Card_Todo_Item_Done item3 = new Card_Todo_Item_Done();
+                item3.setTodo_name("EMPTY");
+                done_itemList.add(item3);
+            }
+
+            notyet_adapter.notifyDataSetChanged();
+            doing_adapter.notifyDataSetChanged();
+            done_adapter.notifyDataSetChanged();
         }
     }
 }

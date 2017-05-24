@@ -1,9 +1,13 @@
 package com.example.lhg.new_proto;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -20,11 +24,19 @@ import android.view.MenuItem;
 
 public class CardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
+    String token;
+    String b_id;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card);
+
+        Intent intent = getIntent();
+        token = intent.getStringExtra("token");
+        b_id = intent.getStringExtra("b_id");
+
 
         Toolbar card_toolbar = (Toolbar)findViewById(R.id.card_toolbar);
         setSupportActionBar(card_toolbar);
@@ -65,11 +77,48 @@ public class CardActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
             }
+
         });
 
 
 
+
+
     }
+
+    public class Card_viewpager extends FragmentStatePagerAdapter {
+        int _numOfTabs;
+
+        public Card_viewpager(FragmentManager fm, int numOfTabs) {
+            super(fm);
+            this._numOfTabs = numOfTabs;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    CardFragment cf = new CardFragment();
+                    Bundle bundle = new Bundle(2); // 파라미터는 전달할 데이터 개수
+                    bundle.putString("token", token); // key , value
+                    bundle.putString("b_id",b_id);
+                    cf.setArguments(bundle);
+
+                    return cf;
+                case 1:
+                    HistoryFragment hf = new HistoryFragment();
+                    return hf;
+                default:
+                    return null;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return _numOfTabs;
+        }
+    }
+
 
 
     public void onBackPressed() {
@@ -122,5 +171,13 @@ public class CardActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.card_drawer);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public  void onResume(){
+        super.onResume();
+        TabLayout tabs = (TabLayout) findViewById(R.id.card_tab);
+        Card_viewpager adapter = new Card_viewpager(getSupportFragmentManager(), tabs.getTabCount());
+        adapter.notifyDataSetChanged();
     }
 }

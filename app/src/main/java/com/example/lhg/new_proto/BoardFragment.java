@@ -35,6 +35,8 @@ public class BoardFragment extends Fragment {
     //recycler view ingredient end
     /////// 토큰 ////
     public String token;
+    public String b_id;
+    ContentValues cValues = new ContentValues();
 
     @Nullable
     @Override
@@ -57,20 +59,11 @@ public class BoardFragment extends Fragment {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView_board.getContext(), DividerItemDecoration.VERTICAL);
         recyclerView_board.addItemDecoration(dividerItemDecoration);
 
-        /*board_item item = new board_item();
-        item.setName("Hello");
-        board_itemList.add(item);
-        mboard_adapter.notifyDataSetChanged();*/
-        //recycler view setting end
-
         ////////////////////////////////////////////////////////////////
         String url = "http://166.62.32.120:5000/";
 
         token = getArguments().getString("token");
         //token = "eyJleHAiOjE0OTUwNTE1NDMsImFsZyI6IkhTMjU2IiwiaWF0IjoxNDk0NDQ2NzQzfQ.eyJ1c2VyX25hbWUiOiJHb29kIE5hbWUiLCJ1c2VyX2lkIjoxLCJ1c2VyX2VtYWlsIjoic29tZTFAZ29vZCJ9.dcJJT-O65wtuY628T9A4QgUfUBML9344VbbFx3ig3ws";
-        /*values.put("name","test");
-        values.put("email","ads@qqq");
-        values.put("password","1234");*/
 
         // AsyncTask를 통해 HttpURLConnection 수행.
         NetworkTask networkTask = new NetworkTask(url, null,token);
@@ -81,11 +74,16 @@ public class BoardFragment extends Fragment {
 
     public static class board_item {
         private String name;
+        private String id;
         private CheckBox button;
         private int state = 0;
 
         public String getName() {
             return this.name;
+        }
+
+        public String getId() {
+            return this.id;
         }
 
         public CheckBox getButton() {
@@ -99,6 +97,8 @@ public class BoardFragment extends Fragment {
         public void setName(String name) {
             this.name = name;
         }
+
+        public void setId(String id){this.id = id;}
 
         public void setButton(CheckBox button) {
             this.button = button;
@@ -177,7 +177,12 @@ public class BoardFragment extends Fragment {
                 int itemposition = recyclerView_board.getChildLayoutPosition(view);
                 board_item item = board_itemList.get(itemposition);
                 Toast.makeText(view.getContext(), item.getName() + " selected", Toast.LENGTH_LONG).show();
+
+                b_id = item.getId();
+
                 Intent intent = new Intent(view.getContext(), CardActivity.class);
+                intent.putExtra("token",token);
+                intent.putExtra("b_id",b_id);
                 view.getContext().startActivity(intent);
 
             }
@@ -200,9 +205,14 @@ public class BoardFragment extends Fragment {
         @Override
         protected String[] doInBackground(Void... params) {
             FunctionResult functionResult = new FunctionResult();
-            String[] sss = functionResult.arrayQuest(url, "user_board", null, token);
+            String[] name = functionResult.arrayQuest(url, "user_board_name", null, token);
+            String[] id = functionResult.arrayQuest(url, "user_board_id", null, token);
 
-            return sss;
+            for(int i=0; i<id.length; i++){
+                cValues.put(id[i],name[i]);
+            }
+
+            return id;
         }
 
         @Override
@@ -213,7 +223,8 @@ public class BoardFragment extends Fragment {
 
             for (int i = 0; i < s.length; i++) {
                 board_item item = new board_item();
-                item.setName(s[i]);
+                item.setId(s[i]);
+                item.setName(cValues.getAsString(s[i]));
                 board_itemList.add(item);
                 mboard_adapter.notifyDataSetChanged();
             }

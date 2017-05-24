@@ -17,7 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class PostConnection {
+public class DeleteConnection {
     public String request(String _url, ContentValues _params, String [] _w, String Token){
         HttpURLConnection urlConn = null;
 
@@ -35,7 +35,7 @@ public class PostConnection {
             urlConn = (HttpURLConnection) url.openConnection();
 
             // urlConn 설정.
-            urlConn.setRequestMethod("POST");
+            urlConn.setRequestMethod("DELETE");
             urlConn.setRequestProperty("Content-Type", "application/json");
             urlConn.setRequestProperty("Authorization", "Bearer " + Token);
 
